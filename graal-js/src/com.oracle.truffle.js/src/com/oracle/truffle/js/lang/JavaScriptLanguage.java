@@ -83,6 +83,7 @@ import com.oracle.truffle.js.nodes.ScriptNode;
 import com.oracle.truffle.js.nodes.access.InitErrorObjectNodeFactory;
 import com.oracle.truffle.js.nodes.control.TryCatchNode;
 import com.oracle.truffle.js.nodes.function.FunctionRootNode;
+import com.oracle.truffle.js.nodes.instrumentation.JSTags.ArgReadTag;
 import com.oracle.truffle.js.nodes.instrumentation.JSTags.BinaryOperationTag;
 import com.oracle.truffle.js.nodes.instrumentation.JSTags.BuiltinRootTag;
 import com.oracle.truffle.js.nodes.instrumentation.JSTags.ControlFlowBlockTag;
@@ -159,6 +160,7 @@ import com.oracle.truffle.js.runtime.truffleinterop.JSInteropUtil;
                 DeclareTag.class,
                 // Other
                 InputNodeTag.class,
+                ArgReadTag.class,
 })
 
 @TruffleLanguage.Registration(id = JavaScriptLanguage.ID, name = JavaScriptLanguage.NAME, implementationName = JavaScriptLanguage.IMPLEMENTATION_NAME, characterMimeTypes = {

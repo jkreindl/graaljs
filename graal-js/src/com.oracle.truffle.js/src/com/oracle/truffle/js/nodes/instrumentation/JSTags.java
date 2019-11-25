@@ -70,6 +70,7 @@ public final class JSTags {
                     ControlFlowBlockTag.class,
                     ControlFlowBranchTag.class,
                     DeclareTag.class,
+                    ArgReadTag.class,
     };
 
     // ##### ECMAScript Language Expressions
@@ -528,6 +529,23 @@ public final class JSTags {
         public static final String TYPE = "declarationType";
 
         private DeclareTag() {
+        }
+    }
+
+    /**
+     * Function argument initialization.
+     *
+     * Marks nodes that read a call argument by its index in the parameter list. This usually
+     * happens in the function prologue, to copy the arguments to the execution frame.
+     *
+     * One intermediate value is provided:
+     * <ul>
+     * <b>#0 index</b> The integer index of the argument that is read.
+     * </ul>
+     */
+    @Tag.Identifier("ArgRead")
+    public static final class ArgReadTag extends Tag {
+        private ArgReadTag() {
         }
     }
 
