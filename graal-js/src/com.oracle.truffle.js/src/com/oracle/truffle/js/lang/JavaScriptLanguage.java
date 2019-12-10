@@ -68,6 +68,7 @@ import com.oracle.truffle.api.debug.DebuggerTags;
 import com.oracle.truffle.api.frame.Frame;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.ProvidedTags;
 import com.oracle.truffle.api.instrumentation.StandardTags;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -161,6 +162,21 @@ import com.oracle.truffle.js.runtime.truffleinterop.JSInteropUtil;
                 // Other
                 InputNodeTag.class,
                 ArgReadTag.class,
+                // truffle analysis tags
+                AnalysisTags.UnaryOperationTag.class,
+                AnalysisTags.BinaryOperationTag.class,
+                AnalysisTags.ReadVariableTag.class,
+                AnalysisTags.WriteVariableTag.class,
+                AnalysisTags.ReadPropertyTag.class,
+                AnalysisTags.WritePropertyTag.class,
+                AnalysisTags.ReadElementTag.class,
+                AnalysisTags.WriteElementTag.class,
+                AnalysisTags.ReadArgumentTag.class,
+                AnalysisTags.FunctionCallTag.class,
+                AnalysisTags.LiteralTag.class,
+                AnalysisTags.ObjectAllocationTag.class,
+                AnalysisTags.ControlFlowBranchTag.class,
+                AnalysisTags.InputNodeTag.class,
 })
 
 @TruffleLanguage.Registration(id = JavaScriptLanguage.ID, name = JavaScriptLanguage.NAME, implementationName = JavaScriptLanguage.IMPLEMENTATION_NAME, characterMimeTypes = {
