@@ -42,6 +42,7 @@ package com.oracle.truffle.js.nodes;
 
 import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.GenerateWrapper;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.ProbeNode;
@@ -55,6 +56,7 @@ import com.oracle.truffle.api.object.DynamicObject;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.source.SourceSection;
 import com.oracle.truffle.js.nodes.function.JSBuiltinNode;
+import com.oracle.truffle.js.nodes.instrumentation.JSTags;
 import com.oracle.truffle.js.runtime.Errors;
 import com.oracle.truffle.js.runtime.LargeInteger;
 
@@ -336,6 +338,36 @@ public abstract class JavaScriptNode extends JavaScriptBaseNode implements Instr
 
     @Override
     public boolean hasTag(Class<? extends Tag> tag) {
+        if (tag == AnalysisTags.UnaryOperationTag.class) {
+            return hasTag(JSTags.UnaryOperationTag.class);
+        } else if (tag == AnalysisTags.BinaryOperationTag.class) {
+            return hasTag(JSTags.BinaryOperationTag.class);
+        } else if (tag == AnalysisTags.WriteVariableTag.class) {
+            return hasTag(JSTags.WriteVariableTag.class);
+        } else if (tag == AnalysisTags.ReadVariableTag.class) {
+            return hasTag(JSTags.ReadVariableTag.class);
+        } else if (tag == AnalysisTags.WritePropertyTag.class) {
+            return hasTag(JSTags.WritePropertyTag.class);
+        } else if (tag == AnalysisTags.ReadPropertyTag.class) {
+            return hasTag(JSTags.ReadPropertyTag.class);
+        } else if (tag == AnalysisTags.WriteElementTag.class) {
+            return hasTag(JSTags.WriteElementTag.class);
+        } else if (tag == AnalysisTags.ReadElementTag.class) {
+            return hasTag(JSTags.ReadElementTag.class);
+        } else if (tag == AnalysisTags.ReadArgumentTag.class) {
+            return hasTag(JSTags.ArgReadTag.class);
+        } else if (tag == AnalysisTags.FunctionCallTag.class) {
+            return hasTag(JSTags.FunctionCallTag.class);
+        } else if (tag == AnalysisTags.LiteralTag.class) {
+            return hasTag(JSTags.LiteralTag.class);
+        } else if (tag == AnalysisTags.ObjectAllocationTag.class) {
+            return hasTag(JSTags.ObjectAllocationTag.class);
+        } else if (tag == AnalysisTags.ControlFlowBranchTag.class) {
+            return hasTag(JSTags.ControlFlowBranchTag.class);
+        } else if (tag == AnalysisTags.InputNodeTag.class) {
+            return hasTag(JSTags.InputNodeTag.class);
+        }
+
         if (tag == StandardTags.StatementTag.class) {
             return (charLength & STATEMENT_TAG_BIT) != 0;
         } else if (tag == StandardTags.CallTag.class) {
