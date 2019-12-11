@@ -52,6 +52,7 @@ import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.ImportStatic;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -158,7 +159,9 @@ public abstract class JSTypeofIdenticalNode extends JSUnaryNode {
 
     @Override
     public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
-        if (materializedTags.contains(BinaryOperationTag.class) || materializedTags.contains(UnaryOperationTag.class) || materializedTags.contains(LiteralTag.class)) {
+        if (materializedTags.contains(BinaryOperationTag.class) || materializedTags.contains(UnaryOperationTag.class) || materializedTags.contains(LiteralTag.class) ||
+                        materializedTags.contains(AnalysisTags.UnaryOperationTag.class) || materializedTags.contains(AnalysisTags.BinaryOperationTag.class) ||
+                        materializedTags.contains(AnalysisTags.LiteralTag.class)) {
             Object[] info = parseMaterializationInfo();
             if (info == null) {
                 info = new Object[]{type.name().toLowerCase(), true, true};

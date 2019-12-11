@@ -44,6 +44,7 @@ import java.util.Set;
 
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.nodes.NodeInfo;
@@ -78,7 +79,7 @@ public abstract class JSComplementNode extends JSUnaryNode {
 
     @Override
     public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
-        if (materializedTags.contains(UnaryOperationTag.class) && !(getOperand() instanceof JSInputGeneratingNodeWrapper)) {
+        if ((materializedTags.contains(UnaryOperationTag.class) || materializedTags.contains(AnalysisTags.UnaryOperationTag.class)) && !(getOperand() instanceof JSInputGeneratingNodeWrapper)) {
             JSComplementNode materialized = JSComplementNodeGen.create(JSInputGeneratingNodeWrapper.create(getOperand()));
             transferSourceSectionAddExpressionTag(this, materialized);
             return materialized;

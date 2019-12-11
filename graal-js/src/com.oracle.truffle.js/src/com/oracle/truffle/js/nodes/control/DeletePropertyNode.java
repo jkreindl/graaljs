@@ -50,6 +50,7 @@ import com.oracle.truffle.api.dsl.Cached.Shared;
 import com.oracle.truffle.api.dsl.Executed;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -123,7 +124,7 @@ public abstract class DeletePropertyNode extends JSTargetableNode {
 
     @Override
     public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
-        if (materializationNeeded() && materializedTags.contains(UnaryOperationTag.class)) {
+        if (materializationNeeded() && (materializedTags.contains(UnaryOperationTag.class) || materializedTags.contains(AnalysisTags.UnaryOperationTag.class))) {
             JavaScriptNode key = cloneUninitialized(propertyNode);
             JavaScriptNode target = cloneUninitialized(targetNode);
             transferSourceSectionAddExpressionTag(this, key);

@@ -46,6 +46,7 @@ import java.util.concurrent.locks.Lock;
 import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.nodes.NodeInfo;
@@ -118,7 +119,7 @@ public final class IfNode extends StatementNode implements ResumableNode {
 
     private static boolean hasMaterializationTag(Set<Class<? extends Tag>> materializedTags) {
         return materializedTags.contains(ControlFlowRootTag.class) || materializedTags.contains(ControlFlowBranchTag.class) ||
-                        materializedTags.contains(ControlFlowBlockTag.class);
+                        materializedTags.contains(ControlFlowBlockTag.class) || materializedTags.contains(AnalysisTags.ControlFlowBranchTag.class);
     }
 
     private IfNode(JavaScriptNode condition, JavaScriptNode thenPart, JavaScriptNode elsePart) {

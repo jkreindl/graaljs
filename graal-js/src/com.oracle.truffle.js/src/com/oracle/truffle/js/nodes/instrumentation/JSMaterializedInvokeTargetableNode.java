@@ -43,6 +43,7 @@ package com.oracle.truffle.js.nodes.instrumentation;
 import java.util.Set;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.js.nodes.JavaScriptNode;
@@ -216,7 +217,7 @@ public abstract class JSMaterializedInvokeTargetableNode extends JSTargetableNod
 
         @Override
         public boolean hasTag(Class<? extends Tag> tag) {
-            return tag == JSTags.InputNodeTag.class;
+            return tag == JSTags.InputNodeTag.class || tag == AnalysisTags.InputNodeTag.class;
         }
 
         @Override

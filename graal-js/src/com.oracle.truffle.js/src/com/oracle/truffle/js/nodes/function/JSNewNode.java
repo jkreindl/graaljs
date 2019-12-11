@@ -52,6 +52,7 @@ import com.oracle.truffle.api.dsl.ImportStatic;
 import com.oracle.truffle.api.dsl.ReportPolymorphism;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.interop.ArityException;
@@ -134,7 +135,7 @@ public abstract class JSNewNode extends JavaScriptNode {
     }
 
     private boolean materializationNeeded(Set<Class<? extends Tag>> materializedTags) {
-        if (materializedTags.contains(ObjectAllocationTag.class)) {
+        if (materializedTags.contains(ObjectAllocationTag.class) || materializedTags.contains(AnalysisTags.ObjectAllocationTag.class)) {
             return (!getTarget().hasSourceSection() && !(getTarget() instanceof JSInputGeneratingNodeWrapper));
         }
         return false;

@@ -41,6 +41,7 @@
 package com.oracle.truffle.js.nodes.instrumentation;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.js.nodes.JavaScriptNode;
 
@@ -65,7 +66,7 @@ public final class JSInputGeneratingNodeWrapper extends JavaScriptNode {
 
     @Override
     public boolean hasTag(Class<? extends Tag> tag) {
-        if (tag == JSTags.InputNodeTag.class) {
+        if (tag == JSTags.InputNodeTag.class || tag == AnalysisTags.InputNodeTag.class) {
             return true;
         } else {
             return delegate.hasTag(tag);

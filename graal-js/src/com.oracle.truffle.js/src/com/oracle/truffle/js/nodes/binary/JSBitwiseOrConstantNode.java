@@ -45,6 +45,7 @@ import java.util.Set;
 
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.nodes.NodeInfo;
@@ -94,7 +95,7 @@ public abstract class JSBitwiseOrConstantNode extends JSUnaryNode {
 
     @Override
     public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
-        if (materializedTags.contains(BinaryOperationTag.class)) {
+        if (materializedTags.contains(BinaryOperationTag.class) || materializedTags.contains(AnalysisTags.BinaryOperationTag.class)) {
             // need to call the generated factory directly to avoid constant optimizations
             JSConstantNode constantNode = JSConstantNode.create(isInt ? rightIntValue : rightBigIntValue);
             JavaScriptNode node = JSBitwiseOrNodeGen.create(getOperand(), constantNode);

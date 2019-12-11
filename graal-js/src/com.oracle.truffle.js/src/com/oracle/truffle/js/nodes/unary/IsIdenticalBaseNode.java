@@ -42,6 +42,7 @@ package com.oracle.truffle.js.nodes.unary;
 
 import java.util.Set;
 
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.js.nodes.JavaScriptNode;
@@ -71,7 +72,7 @@ public abstract class IsIdenticalBaseNode extends JSUnaryNode {
 
     @Override
     public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
-        if (materializedTags.contains(BinaryOperationTag.class)) {
+        if (materializedTags.contains(BinaryOperationTag.class) || materializedTags.contains(AnalysisTags.BinaryOperationTag.class)) {
             JSConstantNode constantNode = JSConstantNode.create(getConstantValue());
             JavaScriptNode materialized;
             if (leftConstant) {

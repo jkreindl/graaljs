@@ -47,6 +47,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.Frame;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.js.nodes.JavaScriptNode;
@@ -78,7 +79,7 @@ public abstract class JSWriteFrameSlotNode extends FrameSlotNode implements Writ
 
     @Override
     public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
-        if (materializedTags.contains(WriteVariableTag.class)) {
+        if (materializedTags.contains(WriteVariableTag.class) || materializedTags.contains(AnalysisTags.WriteVariableTag.class)) {
             if (getRhs() != null && !getRhs().hasSourceSection() && this.hasSourceSection()) {
                 transferSourceSectionAddExpressionTag(this, getRhs());
             }

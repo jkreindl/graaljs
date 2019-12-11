@@ -41,6 +41,7 @@
 package com.oracle.truffle.js.nodes.control;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.nodes.Node;
@@ -94,7 +95,7 @@ public final class GeneratorWrapperNode extends JavaScriptNode implements Repeat
 
     @Override
     public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
-        if (materializedTags.contains(JSTags.ControlFlowBranchTag.class)) {
+        if (materializedTags.contains(JSTags.ControlFlowBranchTag.class) || materializedTags.contains(AnalysisTags.ControlFlowBranchTag.class)) {
             if (childNode instanceof AwaitNode) {
                 GeneratorWrapperNode materialized = new GeneratorWrapperNode(childNode, stateNode, writeStateNode);
                 transferSourceSection(this, materialized);
