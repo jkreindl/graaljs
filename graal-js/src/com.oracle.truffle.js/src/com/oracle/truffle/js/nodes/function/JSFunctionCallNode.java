@@ -56,6 +56,7 @@ import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage.LanguageReference;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.interop.ArityException;
@@ -528,7 +529,7 @@ public abstract class JSFunctionCallNode extends JavaScriptNode implements JavaS
 
         @Override
         public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
-            if (materializedTags.contains(FunctionCallTag.class)) {
+            if (materializedTags.contains(FunctionCallTag.class) || materializedTags.contains(AnalysisTags.FunctionCallTag.class)) {
                 materializeInstrumentableArguments();
                 if (this.hasSourceSection() && !functionNode.hasSourceSection()) {
                     transferSourceSectionAddExpressionTag(this, functionNode);
@@ -732,8 +733,9 @@ public abstract class JSFunctionCallNode extends JavaScriptNode implements JavaS
                 // if we have a target, no de-sugaring needed
                 return this;
             }
-            if (materializedTags.contains(FunctionCallTag.class) || materializedTags.contains(ReadPropertyTag.class) ||
-                            materializedTags.contains(ReadElementTag.class)) {
+            if (materializedTags.contains(FunctionCallTag.class) || materializedTags.contains(ReadPropertyTag.class) || materializedTags.contains(ReadElementTag.class) ||
+                            materializedTags.contains(AnalysisTags.FunctionCallTag.class) || materializedTags.contains(AnalysisTags.ReadPropertyTag.class) ||
+                            materializedTags.contains(AnalysisTags.ReadElementTag.class)) {
                 materializeInstrumentableArguments();
                 InvokeNode invoke = (InvokeNode) createInvoke(null, cloneUninitialized(getArgumentNodes()), isNew(flags), isNewTarget(flags));
                 JSTargetableNode functionTargetNodeDelegate = getFunctionTargetDelegate();

@@ -48,6 +48,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.Frame;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.StandardTags;
 import com.oracle.truffle.api.instrumentation.Tag;
@@ -285,7 +286,9 @@ abstract class LocalVarPostfixIncNode extends LocalVarIncNode {
         if (materializedTags.contains(ReadVariableTag.class) ||
                         materializedTags.contains(WriteVariableTag.class) ||
                         materializedTags.contains(StandardTags.ReadVariableTag.class) ||
-                        materializedTags.contains(StandardTags.WriteVariableTag.class)) {
+                        materializedTags.contains(StandardTags.WriteVariableTag.class) ||
+                        materializedTags.contains(AnalysisTags.ReadVariableTag.class) ||
+                        materializedTags.contains(AnalysisTags.WriteVariableTag.class)) {
             return new LocalVarPostfixIncMaterializedNode(this);
         } else {
             return this;
@@ -415,7 +418,9 @@ abstract class LocalVarPrefixIncNode extends LocalVarIncNode {
         if (materializedTags.contains(ReadVariableTag.class) ||
                         materializedTags.contains(WriteVariableTag.class) ||
                         materializedTags.contains(StandardTags.ReadVariableTag.class) ||
-                        materializedTags.contains(StandardTags.WriteVariableTag.class)) {
+                        materializedTags.contains(StandardTags.WriteVariableTag.class) ||
+                        materializedTags.contains(AnalysisTags.ReadVariableTag.class) ||
+                        materializedTags.contains(AnalysisTags.WriteVariableTag.class)) {
             return new LocalVarPrefixIncMaterializedNode(this);
         } else {
             return this;

@@ -44,6 +44,7 @@ import java.util.Set;
 
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.StandardTags;
 import com.oracle.truffle.api.instrumentation.Tag;
@@ -115,7 +116,7 @@ public class GlobalPropertyNode extends JSTargetableNode implements ReadNode {
 
     @Override
     public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
-        if (materializedTags.contains(ReadPropertyTag.class) && !isScopeAccess() && globalObjectNode == null) {
+        if ((materializedTags.contains(ReadPropertyTag.class) || materializedTags.contains(AnalysisTags.ReadPropertyTag.class)) && !isScopeAccess() && globalObjectNode == null) {
             GlobalObjectNode global = GlobalObjectNode.create(context);
             GlobalPropertyNode materialized = new GlobalPropertyNode(context, propertyName, global);
             if (this.cache != null && this.cache.isMethod()) {

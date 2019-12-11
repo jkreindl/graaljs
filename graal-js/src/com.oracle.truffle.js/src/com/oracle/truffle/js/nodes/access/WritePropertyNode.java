@@ -46,6 +46,7 @@ import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.StandardTags;
 import com.oracle.truffle.api.instrumentation.Tag;
@@ -116,7 +117,7 @@ public class WritePropertyNode extends JSTargetableWriteNode {
 
     @Override
     public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
-        if (materializedTags.contains(WritePropertyTag.class) && !isScopeAccess()) {
+        if ((materializedTags.contains(WritePropertyTag.class) || materializedTags.contains(AnalysisTags.WritePropertyTag.class)) && !isScopeAccess()) {
             // if we have no source section, we must assign one to be discoverable at
             // instrumentation time.
             if (materializationNeeded()) {

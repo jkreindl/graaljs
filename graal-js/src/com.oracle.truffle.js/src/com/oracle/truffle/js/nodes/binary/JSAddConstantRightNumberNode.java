@@ -49,6 +49,7 @@ import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.nodes.NodeInfo;
@@ -102,7 +103,7 @@ public abstract class JSAddConstantRightNumberNode extends JSUnaryNode implement
 
     @Override
     public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
-        if (materializedTags.contains(BinaryOperationTag.class)) {
+        if (materializedTags.contains(BinaryOperationTag.class) || materializedTags.contains(AnalysisTags.BinaryOperationTag.class)) {
             JSConstantNode constantNode = isInt ? JSConstantIntegerNode.create(rightInt) : JSConstantDoubleNode.create(rightDouble);
             JavaScriptNode node = JSAddNode.createUnoptimized(getOperand(), constantNode, truncate);
             transferSourceSectionAddExpressionTag(this, constantNode);

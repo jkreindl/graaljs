@@ -45,6 +45,7 @@ import java.util.Set;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.nodes.LoopNode;
@@ -110,7 +111,7 @@ public final class ForNode extends StatementNode implements ResumableNode {
 
     private static boolean hasMaterializationTag(Set<Class<? extends Tag>> materializedTags) {
         return materializedTags.contains(ControlFlowRootTag.class) || materializedTags.contains(ControlFlowBlockTag.class) ||
-                        materializedTags.contains(ControlFlowBranchTag.class);
+                        materializedTags.contains(ControlFlowBranchTag.class) || materializedTags.contains(AnalysisTags.ControlFlowBranchTag.class);
     }
 
     @Override

@@ -47,6 +47,7 @@ import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
 import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.object.DynamicObject;
@@ -142,7 +143,7 @@ public class AwaitNode extends JavaScriptNode implements ResumableNode, SuspendN
 
     @Override
     public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
-        if (materializationNeeded() && materializedTags.contains(JSTags.ControlFlowBranchTag.class)) {
+        if (materializationNeeded() && (materializedTags.contains(JSTags.ControlFlowBranchTag.class) || materializedTags.contains(AnalysisTags.ControlFlowBranchTag.class))) {
             JSTargetableNode materializedInput = JSMaterializedInvokeTargetableNode.EchoTargetValueNode.create();
             AwaitNode materialized = new AwaitNode(context, expression, readAsyncContextNode, readAsyncResultNode, materializedInput);
             transferSourceSection(this, materialized);
