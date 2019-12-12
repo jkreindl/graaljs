@@ -217,6 +217,8 @@ public abstract class JSFunctionCallNode extends JavaScriptNode implements JavaS
         NodeObjectDescriptor descriptor = JSTags.createNodeObjectDescriptor();
         descriptor.addProperty("isNew", isNew());
         descriptor.addProperty("isInvoke", isInvoke());
+        descriptor.addProperty(AnalysisTags.FunctionCallTag.METADATA_KEY_ARG_OFFSET, 2);
+        descriptor.addProperty(AnalysisTags.FunctionCallTag.METADATA_KEY_IS_PREFIX_CALLING, true);
         return descriptor;
     }
 
