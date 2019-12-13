@@ -46,6 +46,7 @@ import java.util.Map;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
+import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
@@ -71,8 +72,10 @@ public final class NodeObjectDescriptor implements TruffleObject {
 
     @ExportMessage
     @TruffleBoundary
-    Object readMember(String key) {
-        assert data.containsKey(key);
+    Object readMember(String key) throws UnknownIdentifierException {
+        if (!isMemberReadable(key)) {
+            throw UnknownIdentifierException.create(key);
+        }
         return data.get(key);
     }
 
