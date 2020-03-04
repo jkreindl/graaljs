@@ -349,6 +349,8 @@ public abstract class JavaScriptNode extends JavaScriptBaseNode implements Instr
             return hasTag(JSTags.ControlFlowBranchTag.class);
         } else if (tag == AnalysisTags.InputNodeTag.class) {
             return hasTag(JSTags.InputNodeTag.class);
+        } else if (tag == AnalysisTags.BuiltinTag.class) {
+            return hasTag(JSTags.BuiltinRootTag.class);
         }
 
         if (tag == StandardTags.StatementTag.class) {

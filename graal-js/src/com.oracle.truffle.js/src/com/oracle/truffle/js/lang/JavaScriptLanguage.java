@@ -177,6 +177,7 @@ import com.oracle.truffle.js.runtime.truffleinterop.JSInteropUtil;
                 AnalysisTags.ObjectAllocationTag.class,
                 AnalysisTags.ControlFlowBranchTag.class,
                 AnalysisTags.InputNodeTag.class,
+                AnalysisTags.BuiltinTag.class,
 })
 
 @TruffleLanguage.Registration(id = JavaScriptLanguage.ID, name = JavaScriptLanguage.NAME, implementationName = JavaScriptLanguage.IMPLEMENTATION_NAME, characterMimeTypes = {
