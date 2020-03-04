@@ -41,11 +41,14 @@
 package com.oracle.truffle.js.nodes.function;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
+import com.oracle.truffle.api.instrumentation.InstrumentableNode;
 import com.oracle.truffle.api.instrumentation.StandardTags;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.nodes.NodeInterface;
@@ -77,6 +80,16 @@ public abstract class JSBuiltinNode extends AbstractBodyNode {
     @Override
     public Object getNodeObject() {
         return JSTags.createNodeObjectDescriptor("name", getBuiltin().getFullName());
+    }
+
+    @Override
+    public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
+        if (materializedTags.contains(JSTags.BuiltinRootTag.class) || materializedTags.contains(AnalysisTags.BuiltinTag.class)) {
+            for (JavaScriptNode argNode : getArguments()) {
+                transferSourceSectionAddExpressionTag(this, argNode);
+            }
+        }
+        return this;
     }
 
     protected JSBuiltinNode(JSContext context, JSBuiltin builtin) {
