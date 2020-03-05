@@ -63,4 +63,9 @@ public final class AccessFunctionNode extends JavaScriptNode implements Repeatab
     protected JavaScriptNode copyUninitialized() {
         return create();
     }
+
+    @Override
+    public boolean isInstrumentable() {
+        return false;
+    }
 }

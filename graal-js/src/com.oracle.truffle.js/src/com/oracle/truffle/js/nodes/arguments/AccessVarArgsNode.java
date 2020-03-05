@@ -140,7 +140,7 @@ public class AccessVarArgsNode extends AccessIndexedArgumentNode {
     public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
         if (materializedTags.contains(JSTags.ArgReadTag.class) || materializedTags.contains(AnalysisTags.ReadArgumentTag.class)) {
             final MaterializedAccessVarArgsNode materializedNode = new MaterializedAccessVarArgsNode(index);
-            transferSourceSectionAddExpressionTag(this, materializedNode);
+            transferSourceSection(this, materializedNode);
             return materializedNode;
         } else {
             return this;
@@ -219,12 +219,17 @@ public class AccessVarArgsNode extends AccessIndexedArgumentNode {
         }
 
         @Override
+        public boolean isInstrumentable() {
+            return false;
+        }
+
+        @Override
         protected JavaScriptNode copyUninitialized() {
             return new MaterializedAccessVarArgsNode(index);
         }
     }
 
-    private static class ReadVarArgNode extends JavaScriptNode {
+    private static final class ReadVarArgNode extends JavaScriptNode {
 
         private final int index;
 

@@ -68,4 +68,9 @@ public final class AccessThisNode extends JavaScriptNode implements RepeatableNo
     protected JavaScriptNode copyUninitialized() {
         return create();
     }
+
+    @Override
+    public boolean isInstrumentable() {
+        return false;
+    }
 }
