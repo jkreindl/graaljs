@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * The Universal Permissive License (UPL), Version 1.0
@@ -40,12 +40,20 @@
  */
 package com.oracle.truffle.js.nodes.arguments;
 
+import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.instrumentation.AnalysisTags;
+import com.oracle.truffle.api.instrumentation.InstrumentableNode;
+import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.js.nodes.JavaScriptNode;
+import com.oracle.truffle.js.nodes.instrumentation.JSTags;
 import com.oracle.truffle.js.runtime.JSArguments;
+
+import java.util.Arrays;
+import java.util.Set;
 
 public class AccessVarArgsNode extends AccessIndexedArgumentNode {
     private static final int MAX_UNROLL = 250;
@@ -91,7 +99,7 @@ public class AccessVarArgsNode extends AccessIndexedArgumentNode {
             }
 
             if (constantUserArgumentCount == UNSTABLE) {
-                return getArgumentsArrayWithoutExplosion(arguments, currentUserArgumentCount);
+                return getArgumentsArrayWithoutExplosion(frame, arguments, currentUserArgumentCount);
             }
 
             if (constantUserArgumentCount != currentUserArgumentCount) {
@@ -100,12 +108,12 @@ public class AccessVarArgsNode extends AccessIndexedArgumentNode {
                 userArgumentCount = UNSTABLE;
             }
 
-            return getArgumentsArray(arguments, constantUserArgumentCount);
+            return getArgumentsArray(frame, arguments, constantUserArgumentCount);
         }
     }
 
     @ExplodeLoop
-    private Object[] getArgumentsArray(Object[] arguments, int constantUserArgumentCount) {
+    Object[] getArgumentsArray(@SuppressWarnings("unused") VirtualFrame frame, Object[] arguments, int constantUserArgumentCount) {
         int length = constantUserArgumentCount - index;
         Object[] varArgs = new Object[length];
         for (int i = 0; i < length; i++) {
@@ -114,7 +122,7 @@ public class AccessVarArgsNode extends AccessIndexedArgumentNode {
         return varArgs;
     }
 
-    private Object[] getArgumentsArrayWithoutExplosion(Object[] arguments, int currentUserArgumentCount) {
+    Object[] getArgumentsArrayWithoutExplosion(@SuppressWarnings("unused") VirtualFrame frame, Object[] arguments, int currentUserArgumentCount) {
         int length = currentUserArgumentCount - index;
         Object[] varArgs = new Object[length];
         for (int i = 0; i < length; i++) {
@@ -126,5 +134,118 @@ public class AccessVarArgsNode extends AccessIndexedArgumentNode {
     @Override
     protected JavaScriptNode copyUninitialized() {
         return new AccessVarArgsNode(index);
+    }
+
+    @Override
+    public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
+        if (materializedTags.contains(JSTags.ArgReadTag.class) || materializedTags.contains(AnalysisTags.ReadArgumentTag.class)) {
+            final MaterializedAccessVarArgsNode materializedNode = new MaterializedAccessVarArgsNode(index);
+            transferSourceSectionAddExpressionTag(this, materializedNode);
+            return materializedNode;
+        } else {
+            return this;
+        }
+    }
+
+    private static final class MaterializedAccessVarArgsNode extends AccessVarArgsNode {
+
+        private static final JavaScriptNode[] NO_NODES = new JavaScriptNode[0];
+
+        @Children private JavaScriptNode[] readNodes;
+
+        MaterializedAccessVarArgsNode(int paramIndex) {
+            super(paramIndex);
+            this.readNodes = NO_NODES;
+        }
+
+        @Override
+        @ExplodeLoop
+        Object[] getArgumentsArray(VirtualFrame frame, Object[] arguments, int constantUserArgumentCount) {
+            int length = constantUserArgumentCount - index;
+
+            CompilerAsserts.compilationConstant(length);
+            if (readNodes.length < length) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                extendReadNodes(length);
+            } else {
+                CompilerAsserts.compilationConstant(readNodes.length);
+            }
+
+            Object[] varArgs = new Object[length];
+            for (int i = 0; i < length; i++) {
+                varArgs[i] = readNodes[i].execute(frame);
+            }
+            return varArgs;
+        }
+
+        @Override
+        Object[] getArgumentsArrayWithoutExplosion(VirtualFrame frame, Object[] arguments, int currentUserArgumentCount) {
+            int length = currentUserArgumentCount - index;
+
+            if (readNodes.length < length) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                extendReadNodes(length);
+            } else {
+                CompilerAsserts.compilationConstant(readNodes.length);
+            }
+
+            Object[] varArgs = new Object[length];
+            for (int i = 0; i < length; i++) {
+                varArgs[i] = readNodes[i].execute(frame);
+            }
+            return varArgs;
+        }
+
+        private void extendReadNodes(int newLength) {
+            CompilerAsserts.neverPartOfCompilation();
+            final int oldLength = readNodes.length;
+            readNodes = Arrays.copyOf(readNodes, newLength);
+            for (int i = oldLength; i < readNodes.length; i++) {
+                final ReadVarArgNode readVarArgNode = new ReadVarArgNode(i + index);
+                AccessVarArgsNode.transferSourceSectionAddExpressionTag(this, readVarArgNode);
+                readNodes[i] = insert(readVarArgNode);
+                notifyInserted(readVarArgNode);
+            }
+        }
+
+        @Override
+        public boolean hasTag(Class<? extends Tag> tag) {
+            // the nodes actually reading the arguments should be instrumented
+            if (tag == JSTags.ArgReadTag.class) {
+                return false;
+            } else {
+                return super.hasTag(tag);
+            }
+        }
+
+        @Override
+        protected JavaScriptNode copyUninitialized() {
+            return new MaterializedAccessVarArgsNode(index);
+        }
+    }
+
+    private static class ReadVarArgNode extends JavaScriptNode {
+
+        private final int index;
+
+        ReadVarArgNode(int index) {
+            this.index = index;
+        }
+
+        @Override
+        public Object execute(VirtualFrame frame) {
+            Object[] jsArguments = frame.getArguments();
+            return JSArguments.getUserArgument(jsArguments, index);
+        }
+
+        @Override
+        public boolean hasTag(Class<? extends Tag> tag) {
+            return tag == JSTags.ArgReadTag.class || super.hasTag(tag);
+        }
+
+        @Override
+        public Object getNodeObject() {
+            return JSTags.createNodeObjectDescriptor("index", index);
+        }
     }
 }
