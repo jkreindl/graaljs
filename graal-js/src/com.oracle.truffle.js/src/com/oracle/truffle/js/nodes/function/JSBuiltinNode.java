@@ -214,6 +214,11 @@ public abstract class JSBuiltinNode extends AbstractBodyNode {
         public boolean isCallerSensitive() {
             return materialize().isCallerSensitive();
         }
+
+        @Override
+        public InstrumentableNode materializeInstrumentableNodes(Set<Class<? extends Tag>> materializedTags) {
+            return this;
+        }
     }
 
     /**
